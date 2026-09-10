@@ -25,8 +25,8 @@ catalog:
   "@vue/eslint-config-prettier": "10.2.0"
   "@vue/eslint-config-typescript": "14.7.0"
   "@vue/tsconfig": "0.9.1"
-  "dompurify": "3.3.3"
-  "firebase": "12.11.0"
+  "dompurify": "3.4.15"
+  "firebase": "12.19.0"
   "graphql": "16.13.2"
   "maplibre-gl": "5.22.0"
   "modern-normalize": "3.0.1"
@@ -39,6 +39,10 @@ catalog:
 overrides:
   vite: 8.0.8
   ipaddr.js: 2.4.0
+  protobufjs: 7.5.5
+  shell-quote: 1.8.4
+  websocket-driver: 0.7.5
+  tar: 7.5.19
 saveExact: true
 linkWorkspacePackages: true
 preferWorkspacePackages: true
@@ -54,3 +58,17 @@ allowBuilds:
   re2: false
   sharp: true
   unrs-resolver: false
+minimumReleaseAgeExclude:
+  - '@firebase/ai@2.16.0'
+  - '@firebase/analytics-compat@0.2.31'
+  - '@firebase/analytics@0.10.25'
+  - '@firebase/app-compat@0.5.18'
+  - '@firebase/app@0.16.2'
+  - '@firebase/auth-compat@0.6.11'
+  - '@firebase/auth@1.13.6'
+  - '@firebase/firestore-compat@0.4.14'
+  - '@firebase/firestore@4.17.2'
+  - '@firebase/messaging-compat@0.2.30'
+  - '@firebase/messaging@0.13.3'
+  - firebase-tools@15.30.0
+  - firebase@12.19.0

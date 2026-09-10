@@ -15,7 +15,7 @@
         "start": "npx @google-cloud/functions-framework --target=validateMp3 --signature-type=cloudevent"
     },
     "dependencies": {
-        "@google-cloud/firestore": "8.3.0",
+        "@google-cloud/firestore": "8.7.1",
         "@google-cloud/functions-framework": "5.0.2",
         "@google-cloud/storage": "7.19.0",
         "music-metadata": "11.12.3"

@@ -14,7 +14,7 @@
         "start": "npx @google-cloud/functions-framework --target=checkVerifications --signature-type=http"
     },
     "dependencies": {
-        "@google-cloud/firestore": "8.3.0",
+        "@google-cloud/firestore": "8.7.1",
         "@google-cloud/functions-framework": "5.0.2",
         "got": "15.0.1",
         "xml2js": "0.6.2"

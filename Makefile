@@ -7,7 +7,8 @@
 #
 # Ports: proxy 4000 · website 3000 · player 5173 · editor 5174
 
-.PHONY: setup fonts install dev dev-demo emulators server grant-admin \
+.PHONY: setup fonts install dev dev-demo emulators server grant-admin export-data \
+        gcs-up gcs-down \
         proxy player editor website build check test audit typecheck stop clean help
 
 # corepack ships with Node but is not on PATH on this machine, so every pnpm
@@ -35,6 +36,18 @@ export PATH := $(if $(wildcard $(JAVA_BIN)),$(JAVA_BIN):,)$(PATH)
 # treats it as an argument terminator and ignores the port entirely.
 PLAYER_DEV := $(PNPM) --filter @richpods/player exec vite --port 5173 --strictPort
 EDITOR_DEV := $(PNPM) --filter @richpods/editor exec vite --port 5174 --strictPort
+
+# Emulator data is in-memory by default and is LOST on every restart. Import
+# and export it so accounts and RichPods survive `make stop` / `make dev`.
+EMU_DATA := .emulator-data
+# Deferred (=) not immediate (:=): PROJECT is defined further down this file,
+# so := would expand it to empty here.
+EMU_FLAGS = --project $(PROJECT) --only auth,firestore \
+            --import=$(EMU_DATA) --export-on-exit=$(EMU_DATA)
+
+GCS_CONTAINER := richpods-gcs
+GCS_PORT      := 4443
+GCS_BUCKETS   := demo-enclosures demo-uploads demo-transcripts demo-hosted
 
 FIREBASE := $(PNPM) --filter @richpods/server exec firebase
 PROJECT  := demo-incredible-podcasts
@@ -88,15 +101,17 @@ install: ## Install dependencies and build the shared package
 	@# shared/dist must exist before server tests can import it.
 	$(PNPM) build:shared
 
-dev: ## Run the FULL LOCAL STACK: emulators + server + player + editor + website
+dev: gcs-up ## Run the FULL LOCAL STACK: storage + emulators + server + player + editor + website
 	@echo "-> emulator UI  http://localhost:4001"
+	@echo "-> storage      http://127.0.0.1:4443 (fake-gcs-server)"
 	@echo "-> api          http://localhost:4000/graphql   (your own server)"
 	@echo "-> editor       http://localhost:5174/"
 	@echo "-> player       http://localhost:5173/player/<id>"
 	@echo "-> website      http://localhost:3000/"
 	@echo
+	@mkdir -p $(EMU_DATA)
 	@trap 'kill 0' EXIT INT TERM; \
-	  $(FIREBASE) emulators:start --project $(PROJECT) --only auth,firestore & \
+	  $(FIREBASE) emulators:start $(EMU_FLAGS) & \
 	  printf "waiting for firestore emulator"; \
 	  until nc -z 127.0.0.1 8080 2>/dev/null; do printf "."; sleep 1; done; echo " up"; \
 	  $(PNPM) dev:server & \
@@ -116,8 +131,33 @@ dev-demo: ## Run against RichPods' PUBLIC api instead (read-only, no local data)
 	  $(PNPM) dev:website & \
 	  wait
 
+# Cloud Storage has no official emulator, and the server needs one for more
+# than uploads: createRichPod stores a snapshot of the RSS feed in GCS on every
+# create, so without this nothing can be authored at all.
+#
+# @google-cloud/storage reads STORAGE_EMULATOR_HOST and sets customEndpoint,
+# which also makes it skip credentials — so no application code changes.
+gcs-up: ## Start the local Cloud Storage emulator (fake-gcs-server)
+	@docker info >/dev/null 2>&1 || { echo "docker is not running — try: colima start"; exit 1; }
+	@if [ -n "$$(docker ps -q -f name=^$(GCS_CONTAINER)$$)" ]; then \
+	  echo "-> gcs already running on :$(GCS_PORT)"; \
+	elif [ -n "$$(docker ps -aq -f name=^$(GCS_CONTAINER)$$)" ]; then \
+	  docker start $(GCS_CONTAINER) >/dev/null && echo "-> gcs restarted on :$(GCS_PORT)"; \
+	else \
+	  for b in $(GCS_BUCKETS); do mkdir -p .gcs-data/$$b; done; \
+	  docker run -d --name $(GCS_CONTAINER) -p $(GCS_PORT):$(GCS_PORT) \
+	    -v "$(CURDIR)/.gcs-data":/data fsouza/fake-gcs-server \
+	    -scheme http -port $(GCS_PORT) -public-host 127.0.0.1:$(GCS_PORT) \
+	    -backend filesystem -filesystem-root /data >/dev/null \
+	  && echo "-> gcs started on :$(GCS_PORT)"; \
+	fi
+
+gcs-down: ## Stop the local Cloud Storage emulator
+	@docker rm -f $(GCS_CONTAINER) >/dev/null 2>&1 && echo "-> gcs stopped" || echo "-> gcs was not running"
+
 emulators: ## Run only the Firebase emulators (auth + firestore)
-	$(FIREBASE) emulators:start --project $(PROJECT) --only auth,firestore
+	@mkdir -p $(EMU_DATA)
+	$(FIREBASE) emulators:start $(EMU_FLAGS)
 
 server: ## Run only the GraphQL server (needs the emulators)
 	$(PNPM) dev:server
@@ -162,11 +202,27 @@ audit: ## Report known vulnerabilities (runtime deps only)
 check: typecheck test build ## Type-check, test and build
 	@echo "OK   richpods"
 
-stop: ## Free ports 3000/4000/4001/5173/5174/8080/9099
-	@for p in 3000 4000 4001 5173 5174 8080 9099; do \
+stop: export-data ## Stop everything (exports emulator data first)
+	@for p in 3000 4000 4001 4400 5173 5174 8080 9099; do \
 	  pid=$$(lsof -ti tcp:$$p 2>/dev/null | head -1); \
 	  if [ -n "$$pid" ]; then kill $$pid && echo "   stopped :$$p (pid $$pid)"; fi; \
-	done; echo "-> ports clear"
+	done; echo "-> ports clear (storage container left running; make gcs-down to stop it)"
+
+# Emulator data is in-memory; without this every stop silently discards all
+# local accounts and RichPods. --export-on-exit only fires on a graceful
+# signal to the Firebase CLI, and signalling it by name is unsafe: the
+# `make dev` shell has "emulators:start" in its own command line, so pkill
+# matches the parent and takes the whole stack down first. The Emulator Hub's
+# export endpoint is explicit and has neither problem.
+export-data: ## Snapshot emulator state to .emulator-data
+	@if curl -sf -m 3 -o /dev/null http://127.0.0.1:4400/emulators 2>/dev/null; then \
+	  mkdir -p $(EMU_DATA); \
+	  curl -sf -m 30 -X POST http://127.0.0.1:4400/_admin/export \
+	    -H "content-type: application/json" \
+	    -d '{"path":"$(CURDIR)/$(EMU_DATA)"}' >/dev/null \
+	    && echo "   emulator data exported to $(EMU_DATA)" \
+	    || echo "   WARNING: export failed — local accounts may be lost"; \
+	else echo "   (emulator hub not running, nothing to export)"; fi
 
 clean: ## Remove build output and caches (keeps node_modules and fonts)
 	rm -rf player/dist editor/dist server/build shared/dist \

@@ -164,3 +164,9 @@ cloud-functions/generative-ai-tools/build
 # All SIL OFL, but they are build inputs, not source.
 shared/assets/fonts/*
 !shared/assets/fonts/.gitkeep
+
+# Local fake-gcs-server data (make gcs-up)
+.gcs-data/
+
+# Firebase emulator data (persisted across restarts)
+.emulator-data/

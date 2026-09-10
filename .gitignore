@@ -159,3 +159,8 @@ cloud-functions/check-media/build
 *key*.json
 .claude
 cloud-functions/generative-ai-tools/build
+
+# Font binaries are not distributed with the repo; download them as described
+# in the README. They are build inputs, not source.
+shared/assets/fonts/*
+!shared/assets/fonts/.gitkeep

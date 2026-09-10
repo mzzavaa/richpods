@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" width="360" height="100" role="img" aria-label="Incredible Podcasts">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" width="360" height="100" role="img" aria-label="Incredible FM">
   <defs>
     <linearGradient id="incSlit" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#EBD3AC"/>
       <stop offset="1" stop-color="#B8925A"/>
     </linearGradient>
   </defs>
-  <g transform="translate(4 18) scale(1.0)">
+  <g transform="translate(4 18)">
     <path d="M32 8 L37 50 L27 50 Z" fill="url(#incSlit)"/>
     <rect x="14" y="52" width="36" height="1.6" fill="#B8925A" opacity=".45"/>
   </g>
@@ -14,8 +14,8 @@
         font-size="26" font-weight="300" letter-spacing="8.8"
         fill="#0A0A0B">INCREDIBLE</text>
   <rect x="92" y="57" width="238" height="1" fill="#B8925A" opacity=".55"/>
-  <text x="92" y="80"
+  <text x="211" y="80" text-anchor="middle"
         font-family="Inter, -apple-system, 'Helvetica Neue', Arial, sans-serif"
         font-size="13" font-weight="400" letter-spacing="4.4"
-        fill="#B8925A">PODCASTS</text>
+        fill="#B8925A">FM</text>
 </svg>

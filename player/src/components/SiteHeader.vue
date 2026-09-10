@@ -49,7 +49,7 @@
         </template>
 
         <template #logo>
-            <a class="logo-link" :href="websiteUrl('header.homePath')" aria-label="Incredible Podcasts, home">
+            <a class="logo-link" :href="websiteUrl('header.homePath')" aria-label="Incredible FM, home">
                 <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true">
                     <defs>
                         <linearGradient id="incSlit" x1="0" y1="0" x2="0" y2="1">
@@ -63,7 +63,7 @@
                 <span class="wordmark">
                     <span class="wordmark__name">Incredible</span>
                     <span class="wordmark__rule" aria-hidden="true"></span>
-                    <span class="wordmark__sub">Podcasts</span>
+                    <span class="wordmark__sub">FM</span>
                 </span>
             </a>
         </template>

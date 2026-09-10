@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
 
-export const RP_USER_AGENT = "IncrediblePodcasts/1.0 (+https://incredible.fm/bot)";
+export const RP_USER_AGENT = "IncredibleFM/1.0 (+https://incredible.fm/bot)";
 
 export const RSS_ACCEPT_HEADERS = {
     "User-Agent": RP_USER_AGENT,

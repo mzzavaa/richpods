@@ -1,4 +1,4 @@
-const DEFAULT_PATTERN = "https://www.richpods.org/podcast/{ID}";
+const DEFAULT_PATTERN = "https://incredible.fm/podcast/{ID}";
 
 export function hostedPodcastWebsiteUrl(podcastId: string): string {
     const pattern =

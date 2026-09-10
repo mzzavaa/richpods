@@ -1,5 +1,4 @@
 <template>
-    <netidee-banner></netidee-banner>
     <footer class="footer">
         <div class="footer-content">
             <div class="logo-wrapper">
@@ -12,7 +11,6 @@
                 <NuxtLink :to="localePath('team')">{{ $t("footer.team") }}</NuxtLink>
                 <NuxtLink :to="localePath('kontakt')">{{ $t("footer.contact") }}</NuxtLink>
                 <NuxtLink :to="localePath('kontakt')">{{ $t("footer.privacy") }}</NuxtLink>
-                <a href="https://www.netidee.at/richpodsorg" target="_blank" rel="noopener">{{ $t("footer.netideeBlog") }}</a>
                 <DropdownMenu
                     class="language-dropdown"
                     :items="languageItems"
@@ -56,7 +54,6 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import NetideeBanner from "~/components/NetideeBanner.vue";
 import DropdownMenu from "~/components/DropdownMenu.vue";
 
 const localePath = useLocalePath();

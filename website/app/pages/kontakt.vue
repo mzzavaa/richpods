@@ -46,8 +46,8 @@ definePageMeta({
     },
 });
 
-const user = "contact";
-const domain = "richpods.org";
+const user = "podcasts";
+const domain = "incredible-company.com";
 const { t } = useI18n();
 
 useHead({

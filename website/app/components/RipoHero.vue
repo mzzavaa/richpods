@@ -10,7 +10,8 @@
 </script>
 <style scoped lang="scss">
 .hero {
-    background: linear-gradient(174deg, #9e744a 0%, #B2BC57 100%) 0 0;
+    /* Incredible: gold falling into ink, replacing upstream's olive/tan. */
+    background: linear-gradient(174deg, #8c6c3c 0%, #0a0a0b 100%) 0 0;
     display: flex;
     justify-content: center;
     padding: var(--space-s) 0;

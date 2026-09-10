@@ -279,7 +279,7 @@ async function loadMore() {
 // Mirrors the fallback used by the player (see player/src/components/InfoDialog.vue).
 // Overridable per-deployment via the NUXT_PUBLIC_REPORT_EMAIL runtime config key,
 // which must be declared as `reportEmail` in `runtimeConfig.public` (nuxt.config.ts).
-const REPORT_EMAIL_FALLBACK = "contact@richpods.org";
+const REPORT_EMAIL_FALLBACK = "podcasts@incredible-company.com";
 const configuredReportEmail = (config.public as { reportEmail?: string })
   .reportEmail;
 const reportEmail =

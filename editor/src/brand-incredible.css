@@ -1,0 +1,56 @@
+/* Incredible brand layer for the RichPods editor.
+ *
+ * Separate override file rather than edits inside style.css, so this fork
+ * rebases on upstream with a near-zero conflict surface. Imported LAST in
+ * editor/src/main.ts, so it wins.
+ *
+ * Palette/type authority:
+ *   incredible.builders/themes/incredible/assets/css/tokens.css
+ *
+ * DELIBERATE: the editor keeps light surfaces. It is a back-office authoring
+ * tool with dense forms, and the Incredible identity is a dark one — inverting
+ * a complex form UI wholesale invites unreadable states. So this applies the
+ * brand's typography, header and accents, and leaves the working canvas light.
+ */
+
+@font-face {
+    font-display: swap;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    src: url("@richpods/shared/assets/fonts/Inter[wght].woff2") format("woff2");
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "Newsreader";
+    font-style: normal;
+    font-weight: 200 800;
+    src: url("@richpods/shared/assets/fonts/Newsreader[wght].woff2") format("woff2");
+}
+
+:root:root {
+    --inc-ink: #0a0a0b;
+    --inc-ink-sunk: #060607;
+    --inc-gold: #b8925a;
+    --inc-gold-warm: #d8b584;
+    --inc-paper: #f2efe9;
+
+    /* Shared header (RipoSiteHeader / RipoButton) — matches player + website. */
+    --heading-font-family: "Newsreader";
+    --header-background-color: var(--inc-ink-sunk);
+    --hero-color: var(--inc-paper);
+    --ripo-header-border-bottom: 1px solid rgba(184, 146, 90, 0.26);
+
+    --richpod-font-family-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* Working canvas stays light and legible. */
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1c1b19;
+    background-color: #f2efe9;
+}
+
+:where(h1, h2, h3) {
+    font-family: "Newsreader", "Source Serif 4", Georgia, serif;
+    font-weight: 400;
+}

@@ -49,12 +49,22 @@
         </template>
 
         <template #logo>
-            <a class="logo-link" :href="websiteUrl('header.homePath')">
-                <img
-                    class="logo"
-                    src="@richpods/shared/assets/images/logo-full.svg"
-                    alt="RichPods"
-                />
+            <a class="logo-link" :href="websiteUrl('header.homePath')" aria-label="Incredible Podcasts, home">
+                <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="incSlit" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#EBD3AC" />
+                            <stop offset="1" stop-color="#B8925A" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M32 8 L37 50 L27 50 Z" fill="url(#incSlit)" />
+                    <rect x="14" y="52" width="36" height="1.6" fill="#B8925A" opacity=".45" />
+                </svg>
+                <span class="wordmark">
+                    <span class="wordmark__name">Incredible</span>
+                    <span class="wordmark__rule" aria-hidden="true"></span>
+                    <span class="wordmark__sub">Podcasts</span>
+                </span>
             </a>
         </template>
     </RipoSiteHeader>
@@ -79,11 +89,51 @@ function websiteUrl(pathKey: string) {
     height: 100%;
 }
 
-.logo {
-    max-width: 160px;
-    max-height: 40px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+.logo-link {
+    gap: 10px;
+    text-decoration: none;
+}
+
+.logo-mark {
+    width: 26px;
+    height: 26px;
+    flex: none;
+}
+
+/* Mirrors .wordmark in the shared Incredible theme
+   (incredible.builders/themes/incredible/assets/css/components.css). */
+.wordmark {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.34em;
+    line-height: 1;
+}
+
+.wordmark__name {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 300;
+    font-size: 1.05rem;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+    text-transform: uppercase;
+    color: #f2efe9;
+}
+
+.wordmark__rule {
+    width: 100%;
+    height: 1px;
+    background: #b8925a;
+    opacity: 0.55;
+}
+
+.wordmark__sub {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 400;
+    font-size: 0.58rem;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    text-transform: uppercase;
+    color: #b8925a;
 }
 </style>

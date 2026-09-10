@@ -1,0 +1,59 @@
+// Incredible brand layer for the RichPods website.
+//
+// Separate override file rather than edits inside base.scss, so this fork
+// rebases on upstream with a near-zero conflict surface. @use'd AFTER
+// "assets/styles/base" in app.vue, so it wins.
+//
+// Palette/type authority: incredible.builders/themes/incredible/assets/css/tokens.css
+
+@font-face {
+    font-display: swap;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    src: url("@richpods/shared/assets/fonts/Inter[wght].woff2") format("woff2");
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "Newsreader";
+    font-style: normal;
+    font-weight: 200 800;
+    src: url("@richpods/shared/assets/fonts/Newsreader[wght].woff2") format("woff2");
+}
+
+:root:root {
+    --inc-ink: #0a0a0b;
+    --inc-ink-raised: #111112;
+    --inc-ink-sunk: #060607;
+    --inc-gold: #b8925a;
+    --inc-gold-warm: #d8b584;
+    --inc-gold-pale: #ebd3ac;
+    --inc-paper: #f2efe9; // NEVER #fff — house rule
+    --inc-paper-mute: #a9a39a;
+
+    --header-background-color: var(--inc-ink-sunk);
+    --heading-font-family: "Newsreader", "Source Serif 4", Georgia, serif;
+    --hero-highlight-color: var(--inc-gold-pale);
+    --hero-color: var(--inc-paper);
+    --footer-background-color: var(--inc-ink-sunk);
+
+    --link-bright-color: var(--inc-paper);
+    --link-bright-color-hover: var(--inc-gold-warm);
+
+    --button-secondary-color: var(--inc-gold);
+
+    --ripo-header-border-bottom: 1px solid rgba(184, 146, 90, 0.26);
+}
+
+html body {
+    background: var(--inc-ink);
+    color: var(--inc-paper);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:where(h1, h2, h3, h4) {
+    font-family: var(--heading-font-family);
+    font-weight: 400;
+    color: var(--inc-paper);
+}

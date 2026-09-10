@@ -65,7 +65,10 @@ const safeArtworkUrl = computed(() => {
     grid-row: span 4;
     grid-template-rows: subgrid;
     width: 100%;
-    background: #fff;
+    /* Incredible: raised ink surface, not white. */
+    background: #111112;
+    color: #f2efe9;
+    border: 1px solid rgba(184, 146, 90, 0.16);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -81,7 +84,7 @@ const safeArtworkUrl = computed(() => {
     position: relative;
     aspect-ratio: 1;
     overflow: hidden;
-    background-color: #f0ebe6;
+    background-color: #161618;
 }
 
 .artwork {
@@ -95,7 +98,7 @@ const safeArtworkUrl = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #c4b8a9;
+    color: #6e6a64;
 
     svg {
         width: 40%;
@@ -139,7 +142,7 @@ const safeArtworkUrl = computed(() => {
 
 .podcast-title {
     font-size: var(--step--1);
-    color: #555;
+    color: #a9a39a;
     padding: var(--space-2xs) var(--space-2xs) 0;
     margin: 0;
     align-self: end;
@@ -150,7 +153,7 @@ const safeArtworkUrl = computed(() => {
 
 .episode-title {
     font-size: var(--step--2);
-    color: #767676;
+    color: #6e6a64;
     padding: 2px var(--space-2xs) var(--space-s);
     margin: 0;
     white-space: nowrap;

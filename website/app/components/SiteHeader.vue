@@ -46,7 +46,7 @@
             <NuxtLink class="logo-link" :to="localePath('index')">
                 <img
                     class="logo"
-                    src="@richpods/shared/assets/images/logo-full.svg"
+                    src="@richpods/shared/assets/images/logo-full-white.svg"
                     alt="RichPods"
                 />
             </NuxtLink>

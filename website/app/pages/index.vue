@@ -169,20 +169,10 @@
         <p>{{ $t("home.ctaText") }}</p>
         <div class="action">
             <client-only>
-                <RipoButton as="link" size="large" href="mailto:contact@richpods.org">
+                <RipoButton as="link" size="large" href="mailto:podcasts@incredible-company.com">
                     {{ $t("home.ctaEmail") }}
                 </RipoButton>
             </client-only>
-            <RipoButton
-                as="link"
-                size="large"
-                variant="secondary"
-                href="https://www.netidee.at/richpodsorg"
-                target="_blank"
-                rel="noopener"
-            >
-                {{ $t("home.devBlog") }}
-            </RipoButton>
         </div>
     </div>
 </div>

@@ -106,7 +106,7 @@ import { useRichPod } from "../composables/useRichPod.ts";
 import { useAudio } from "../composables/useAudio.ts";
 import ShareIconButton from "./ShareIconButton.vue";
 
-const REPORT_EMAIL = import.meta.env.VITE_REPORT_EMAIL || "contact@richpods.org";
+const REPORT_EMAIL = import.meta.env.VITE_REPORT_EMAIL || "podcasts@incredible-company.com";
 
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false });
 

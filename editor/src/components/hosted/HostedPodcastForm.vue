@@ -461,7 +461,7 @@ const coverPreview = ref<string | null>(null);
 const form = ref({
     title: "",
     description: "",
-    link: "https://www.richpods.org",
+    link: "https://incredible.fm",
     language: locale.value.split("-")[0] || "en",
     itunesCategory: "",
     itunesExplicit: false,

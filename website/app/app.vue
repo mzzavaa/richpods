@@ -54,6 +54,7 @@ useHead({
 </script>
 <style lang="scss">
 @use "assets/styles/base";
+@use "assets/styles/brand-incredible";
 </style>
 <style scoped lang="scss">
 main {

@@ -1,0 +1,141 @@
+// Incredible brand layer for the RichPods player.
+//
+// Kept as a separate override file rather than edits inside theme.scss so this
+// fork can keep rebasing on upstream with a near-zero conflict surface. It is
+// imported LAST in main.ts, after base.scss and theme.scss, so it wins.
+//
+// Palette and type are taken from the shared Incredible theme, which is the
+// authority for all six sibling sites:
+//   incredible.builders/themes/incredible/assets/css/tokens.css
+//
+// (Note: incredible.builders/hugo.toml carries a stale comment claiming a
+// green #3D8F37 palette. That colour appears nowhere in the theme. The real
+// identity is ink + gold.)
+
+// ---- Fonts. All SIL OFL. ------------------------------------------------
+@font-face {
+    font-display: swap;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    src: url("@richpods/shared/assets/fonts/Inter[wght].woff2") format("woff2");
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "Inter";
+    font-style: italic;
+    font-weight: 100 900;
+    src: url("@richpods/shared/assets/fonts/Inter-Italic[wght].woff2") format("woff2");
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "Newsreader";
+    font-style: normal;
+    font-weight: 200 800;
+    src: url("@richpods/shared/assets/fonts/Newsreader[wght].woff2") format("woff2");
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 400;
+    src: url("@richpods/shared/assets/fonts/IBMPlexMono-400.woff2") format("woff2");
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 600;
+    src: url("@richpods/shared/assets/fonts/IBMPlexMono-600.woff2") format("woff2");
+}
+
+// NOTE the doubled :root. Six components `@use "@/assets/theme"`, and SCSS
+// re-emits theme.scss's whole :root token block into each of their scoped
+// stylesheets — so a plain `:root` here loses to whichever copy lands last.
+// `:root:root` has higher specificity (0,2,0 vs 0,1,0) and wins on merit,
+// no !important needed.
+:root:root {
+    // ---- Incredible primitives (mirrors theme tokens.css) ---------------
+    --inc-ink: #0a0a0b;
+    --inc-ink-raised: #111112;
+    --inc-ink-sunk: #060607;
+    --inc-gold: #b8925a;
+    --inc-gold-warm: #d8b584;
+    --inc-gold-pale: #ebd3ac;
+    --inc-gold-deep: #8c6c3c;
+    --inc-paper: #f2efe9; // primary text. NEVER #fff — house rule.
+    --inc-paper-mute: #a9a39a;
+    --inc-paper-dim: #6e6a64;
+
+    // ---- Core surfaces ---------------------------------------------------
+    --richpod-color: var(--inc-paper);
+    --richpod-background-color: var(--inc-ink);
+    --richpod-header-background-color: var(--inc-ink-sunk);
+
+    // ---- Shared header (RipoSiteHeader / RipoButton) ----------------------
+    --heading-font-family: "Newsreader";
+    --header-background-color: var(--inc-ink-sunk);
+    --hero-color: var(--inc-paper);
+    --ripo-header-border-bottom: 1px solid rgba(184, 146, 90, 0.26); // --alpha-gold-line
+
+    // ---- Typography -------------------------------------------------------
+    --richpod-font-family-text: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --richpod-font-family-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    // ---- Accents: olive/orange -> gold ------------------------------------
+    --richpod-seek-bar-color: rgba(242, 239, 233, 0.25);
+    --richpod-seek-bar-progress-color: var(--inc-gold);
+
+    --richpod-chapter-nibble-past: var(--inc-gold-deep);
+    --richpod-chapter-nibble-current: var(--inc-gold-warm);
+    --richpod-chapter-nibble-upcoming: #3a3833;
+
+    --richpod-play-button-gradient-start: var(--inc-gold-pale);
+    --richpod-play-button-gradient-end: var(--inc-gold);
+    --richpod-play-button-border: var(--inc-gold-warm);
+    --richpod-control-button-border: rgba(184, 146, 90, 0.45);
+
+    --richpod-button-background: var(--inc-ink-raised);
+    --richpod-button-text: var(--inc-paper);
+
+    --richpod-chapter-color: var(--inc-paper);
+    --richpod-chapter-background: var(--inc-ink-raised);
+
+    --richpod-overlay-background-color: var(--inc-ink-raised);
+    --richpod-overlay-backdrop: rgba(6, 6, 7, 0.72); // --alpha-scrim
+
+    --richpod-unverified-warning-background: #8c3c2a;
+}
+
+// Upstream sets the body face to "venice-blvd", a proprietary Adobe Typekit
+// family we are not licensed for. Replace it with the brand body face.
+html body {
+    font-family: var(--richpod-font-family-text);
+    color: var(--richpod-color);
+}
+
+// Upstream paints a blurred olive/orange radial gradient behind the app
+// (base.scss). The Incredible surface is flat ink with a restrained gold
+// wash, so damp it right down rather than recolouring it loudly.
+html:root::after {
+    background: transparent
+        radial-gradient(
+            closest-side at 50% 45%,
+            rgba(184, 146, 90, 0.18) 0%,
+            rgba(184, 146, 90, 0.07) 55%,
+            rgba(10, 10, 11, 0) 100%
+        )
+        no-repeat;
+    background-position: 30vw 70vh;
+    background-size: cover;
+}
+
+// Headings pick up the display serif.
+:where(h1, h2, h3) {
+    font-family: "Newsreader", "Source Serif 4", Georgia, serif;
+    font-weight: 400;
+}

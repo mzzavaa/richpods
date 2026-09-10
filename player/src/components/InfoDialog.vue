@@ -75,7 +75,7 @@ import { useRichPod } from "../composables/useRichPod.ts";
 import ModalDialog from "./ModalDialog.vue";
 import { computed, useTemplateRef } from "vue";
 
-const REPORT_EMAIL = import.meta.env.VITE_REPORT_EMAIL || "contact@richpods.org";
+const REPORT_EMAIL = import.meta.env.VITE_REPORT_EMAIL || "podcasts@incredible-company.com";
 
 withDefaults(defineProps<{ preview?: boolean }>(), { preview: false });
 

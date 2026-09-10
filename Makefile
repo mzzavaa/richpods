@@ -7,8 +7,8 @@
 #
 # Ports: proxy 4000 · website 3000 · player 5173 · editor 5174
 
-.PHONY: setup fonts install dev proxy player editor website \
-        build check test audit typecheck stop clean help
+.PHONY: setup fonts install dev dev-demo emulators server grant-admin \
+        proxy player editor website build check test audit typecheck stop clean help
 
 # corepack ships with Node but is not on PATH on this machine, so every pnpm
 # call goes through it explicitly. COREPACK_ENABLE_DOWNLOAD_PROMPT=0 stops it
@@ -22,6 +22,22 @@ export COREPACK_ENABLE_DOWNLOAD_PROMPT := 0
 # without a shell, and that bypasses the PATH exported above. Recipes with
 # shell metacharacters were fine; `make audit` was not.
 PNPM := $(if $(wildcard $(NODE_BIN)/pnpm),$(NODE_BIN)/pnpm,pnpm)
+
+# Homebrew's openjdk is keg-only, so it is not on PATH by default and the
+# Firebase emulators are Java. Resolved lazily; harmless if absent.
+JAVA_BIN := $(shell brew --prefix openjdk 2>/dev/null)/bin
+export PATH := $(if $(wildcard $(JAVA_BIN)),$(JAVA_BIN):,)$(PATH)
+
+# Ports are pinned explicitly and strictly. Both dev scripts are bare `vite`,
+# which defaults to 5173, so whichever started first used to win the port and
+# the other silently landed on 5174. `exec vite` is used rather than
+# `run dev -- --port`, because pnpm forwards the `--` to vite, which then
+# treats it as an argument terminator and ignores the port entirely.
+PLAYER_DEV := $(PNPM) --filter @richpods/player exec vite --port 5173 --strictPort
+EDITOR_DEV := $(PNPM) --filter @richpods/editor exec vite --port 5174 --strictPort
+
+FIREBASE := $(PNPM) --filter @richpods/server exec firebase
+PROJECT  := demo-incredible-podcasts
 
 FONT_DIR := shared/assets/fonts
 CDN      := https://cdn.jsdelivr.net/npm
@@ -72,27 +88,60 @@ install: ## Install dependencies and build the shared package
 	@# shared/dist must exist before server tests can import it.
 	$(PNPM) build:shared
 
-dev: ## Run proxy + player + editor + website together (Ctrl-C stops all)
-	@echo "-> proxy    http://127.0.0.1:4000/graphql"
-	@echo "-> website  http://localhost:3000/anhoeren    (the list)"
+dev: ## Run the FULL LOCAL STACK: emulators + server + player + editor + website
+	@echo "-> emulator UI  http://localhost:4001"
+	@echo "-> api          http://localhost:4000/graphql   (your own server)"
+	@echo "-> editor       http://localhost:5174/"
+	@echo "-> player       http://localhost:5173/player/<id>"
+	@echo "-> website      http://localhost:3000/"
+	@echo
+	@trap 'kill 0' EXIT INT TERM; \
+	  $(FIREBASE) emulators:start --project $(PROJECT) --only auth,firestore & \
+	  printf "waiting for firestore emulator"; \
+	  until nc -z 127.0.0.1 8080 2>/dev/null; do printf "."; sleep 1; done; echo " up"; \
+	  $(PNPM) dev:server & \
+	  $(PLAYER_DEV) & \
+	  $(EDITOR_DEV) & \
+	  $(PNPM) dev:website & \
+	  wait
+
+dev-demo: ## Run against RichPods' PUBLIC api instead (read-only, no local data)
+	@echo "-> proxy    http://127.0.0.1:4000/graphql -> api.richpods.org"
 	@echo "-> player   http://localhost:5173/player/aCDKJCUpHS65yrutc34k"
-	@echo "-> editor   http://localhost:5174/            (needs Firebase, see NOTES)"
+	@echo "-> website  http://localhost:3000/anhoeren"
 	@echo
 	@trap 'kill 0' EXIT INT TERM; \
 	  node tools/api-proxy.mjs 4000 & \
-	  $(PNPM) dev:player & \
-	  $(PNPM) --filter @richpods/editor dev -- --port 5174 --strictPort & \
+	  $(PLAYER_DEV) & \
 	  $(PNPM) dev:website & \
 	  wait
+
+emulators: ## Run only the Firebase emulators (auth + firestore)
+	$(FIREBASE) emulators:start --project $(PROJECT) --only auth,firestore
+
+server: ## Run only the GraphQL server (needs the emulators)
+	$(PNPM) dev:server
+
+# The role is a Firebase custom claim and is what unlocks hosted podcasts,
+# image uploads, Slideshow/Poll chapters and bypassing feed verification.
+grant-admin: ## Make the first emulator user a super_admin
+	@uid=$$(curl -s -X POST -H "Authorization: Bearer owner" -H "content-type: application/json" -d '{}' \
+	  "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/projects/$(PROJECT)/accounts:query" \
+	  | python3 -c "import sys,json; u=json.load(sys.stdin).get('userInfo') or []; print(u[0]['localId'] if u else '')"); \
+	if [ -z "$$uid" ]; then \
+	  echo "no user yet — sign up at http://localhost:5174/ first, then rerun"; exit 1; fi; \
+	echo "-> granting super_admin to $$uid"; \
+	$(PNPM) --filter @richpods/server set-user-role $$uid super_admin; \
+	echo "-> sign out and back in so the new token carries the claim"
 
 proxy: ## Run only the CORS proxy to the public API
 	node tools/api-proxy.mjs 4000
 
 player: ## Run only the player
-	$(PNPM) dev:player
+	$(PLAYER_DEV)
 
 editor: ## Run only the editor
-	$(PNPM) --filter @richpods/editor dev -- --port 5174 --strictPort
+	$(EDITOR_DEV)
 
 website: ## Run only the website
 	$(PNPM) dev:website
@@ -113,8 +162,8 @@ audit: ## Report known vulnerabilities (runtime deps only)
 check: typecheck test build ## Type-check, test and build
 	@echo "OK   richpods"
 
-stop: ## Free ports 3000/4000/5173/5174
-	@for p in 3000 4000 5173 5174; do \
+stop: ## Free ports 3000/4000/4001/5173/5174/8080/9099
+	@for p in 3000 4000 4001 5173 5174 8080 9099; do \
 	  pid=$$(lsof -ti tcp:$$p 2>/dev/null | head -1); \
 	  if [ -n "$$pid" ]; then kill $$pid && echo "   stopped :$$p (pid $$pid)"; fi; \
 	done; echo "-> ports clear"

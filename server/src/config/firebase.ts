@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import {
+    connectAuthEmulator,
     getAuth,
     getRedirectResult,
 } from "firebase/auth";
@@ -13,6 +14,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// See editor/src/lib/firebase.ts: firebase-admin and @google-cloud/firestore
+// both pick up FIREBASE_AUTH_EMULATOR_HOST / FIRESTORE_EMULATOR_HOST by
+// themselves, but this web-SDK client does not, so wire it up explicitly.
+if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+    connectAuthEmulator(auth, `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}`, {
+        disableWarnings: true,
+    });
+}
 
 export {
     getRedirectResult,

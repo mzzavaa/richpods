@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import {
+    connectAuthEmulator,
     getAuth,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
@@ -17,6 +18,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// Local development against the Firebase Auth emulator.
+//
+// Guarded by an env var, so production builds are byte-identical to before.
+// Unlike the Admin SDK, the Firebase *web* SDK does not read
+// FIREBASE_AUTH_EMULATOR_HOST on its own, so the connection has to be made
+// explicitly — and before any auth call is issued.
+const authEmulatorHost = import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_HOST;
+if (authEmulatorHost) {
+    connectAuthEmulator(auth, `http://${authEmulatorHost}`, { disableWarnings: true });
+}
 
 // Auth functions
 export const signUpWithEmail = (email: string, password: string) =>
